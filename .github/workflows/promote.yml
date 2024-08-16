@@ -39,7 +39,7 @@ jobs:
         echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
 
     - name: Show the version
-      run: echo "Promoting with version: ${{ env.VERSION }}"
+      run: echo "Promoting with version:${{ env.VERSION }}"
 
     - name: Run post-promotion tasks
-      run: echo "Running post-promotion tasks with version: ${{ env.VERSION }}"
+      run: echo "Running post-promotion tasks with version:${{ env.VERSION }}"
