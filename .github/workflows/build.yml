@@ -17,11 +17,11 @@ jobs:
     - name: Check out the repository
       uses: actions/checkout@v3
 
-    - name: Run Build with Version
+    - name: Create version.txt
       run: echo "${{ inputs.version }}" > version.txt
 
-    - name: Save Version Artifact
+    - name: Upload version artifact
       uses: actions/upload-artifact@v3
       with:
         name: version
-        path: ./.github/workflows/version.txt
+        path: version.txt  # Correct path to version.txt
