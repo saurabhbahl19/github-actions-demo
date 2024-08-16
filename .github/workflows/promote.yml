@@ -1,0 +1,25 @@
+# .github/workflows/promote.yml
+name: Promote
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number'
+        required: false
+        default: ${{ secrets.LAST_VERSION }} # Default to the last version secret
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Display the version
+      run: |
+        VERSION=${{ github.event.inputs.version || secrets.LAST_VERSION }}
+        echo "Promoting with version: $VERSION"
+
+    - name: Run post-promotion tasks
+      run: |
+        VERSION=${{ github.event.inputs.version || secrets.LAST_VERSION }}
+        echo "Running post-promotion tasks with version: $VERSION"
