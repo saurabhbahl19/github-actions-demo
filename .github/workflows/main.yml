@@ -1,10 +1,17 @@
-name: CI
+name: CI with Version Input
 
-on: [push]
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number'
+        required: true
+        default: '1.0.0'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - name: Check out the repository
       uses: actions/checkout@v3
@@ -14,6 +21,8 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Run the Python script
-      run: python hello.py
+    - name: Display the version
+      run: echo "Running workflow with version: ${{ github.event.inputs.version }}"
 
+    - name: Run the Python script with version
+      run: python hello.py ${{ github.event.inputs.version }}
