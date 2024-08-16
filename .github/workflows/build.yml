@@ -1,8 +1,13 @@
-# .github/workflows/build.yml#
+# .github/workflows/build.yml
 name: Build
 
 on:
-  workflow_call: # Allows this workflow to be called by other workflows
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version number'
+        required: true
+        type: string
 
 jobs:
   build:
@@ -12,8 +17,8 @@ jobs:
     - name: Check out the repository
       uses: actions/checkout@v3
 
-    - name: Run Build
-      run: echo "Building..."
+    - name: Run Build with Version
+      run: echo "${{ inputs.version }}" > version.txt
 
     - name: Save Version Artifact
       uses: actions/upload-artifact@v3
