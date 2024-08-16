@@ -22,7 +22,8 @@ jobs:
         python-version: '3.x'
 
     - name: Display the version
-      run: echo "Running workflow with version: ${{ github.event.inputs.version }}"
+      run: |
+        echo "Running workflow with version: ${{ github.event.inputs.version }}"
 
     - name: Run the Python script with version
       run: python hello.py ${{ github.event.inputs.version }}
