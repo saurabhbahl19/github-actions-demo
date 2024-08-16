@@ -7,22 +7,37 @@ on:
       version:
         description: 'Version number'
         required: false
-        default: '' # Default to empty; will use artifact version if not provided
+        default: '1.0.0' # Default is empty; will use artifact version if not provided
 
 jobs:
   promote:
     uses: ./.github/workflows/build.yml
     with:
-      version: ${{ github.event.inputs.version }}
-
-  post-promote:
-    runs-on: ubuntu-latest
-    needs: promote
+      version: ${{ github.event.inputs.version }} # Pass version input if needed in build.yml
 
     steps:
+    - name: Download version artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: version
+        path: ./
+
+    - name: Set default version from artifact
+      id: set_version
+      run: |
+        if [ -f version.txt ]; then
+          VERSION=$(cat version.txt)
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+        else
+          echo "VERSION=unknown" >> $GITHUB_ENV
+        fi
+
     - name: Display the version
       run: |
-        echo "Promoting with version: ${{ github.event.inputs.version }}"
+        VERSION=${{ github.event.inputs.version || env.VERSION }}
+        echo "Promoting with version: $VERSION"
+
     - name: Run post-promotion tasks
       run: |
-        echo "Running post-promotion tasks with version: ${{ github.event.inputs.version }}"
+        VERSION=${{ github.event.inputs.version || env.VERSION }}
+        echo "Running post-promotion tasks with version: $VERSION"
