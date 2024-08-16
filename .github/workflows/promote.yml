@@ -7,19 +7,35 @@ on:
       version:
         description: 'Version number'
         required: false
-        default: ${{ secrets.LAST_VERSION }} # Default to the last version secret
+        default: '' # Default is empty; we will set it from the artifact if not provided
 
 jobs:
   promote:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Download version artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: version
+        path: ./
+
+    - name: Set default version from artifact
+      id: set_version
+      run: |
+        if [ -f version.txt ]; then
+          VERSION=$(cat version.txt)
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+        else
+          echo "VERSION=unknown" >> $GITHUB_ENV
+        fi
+
     - name: Display the version
       run: |
-        VERSION=${{ github.event.inputs.version || secrets.LAST_VERSION }}
+        VERSION=${{ github.event.inputs.version || env.VERSION }}
         echo "Promoting with version: $VERSION"
 
     - name: Run post-promotion tasks
       run: |
-        VERSION=${{ github.event.inputs.version || secrets.LAST_VERSION }}
+        VERSION=${{ github.event.inputs.version || env.VERSION }}
         echo "Running post-promotion tasks with version: $VERSION"
