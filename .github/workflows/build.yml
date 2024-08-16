@@ -17,11 +17,11 @@ jobs:
     - name: Check out the repository
       uses: actions/checkout@v3
 
-    - name: Create version.txt
+    - name: Update version.txt
       run: echo "${{ inputs.version }}" > version.txt
 
     - name: Upload version artifact
       uses: actions/upload-artifact@v3
       with:
         name: version
-        path: version.txt  # Correct path to version.txt
+        path: version.txt
