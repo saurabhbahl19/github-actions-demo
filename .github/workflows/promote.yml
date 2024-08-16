@@ -6,8 +6,8 @@ on:
     inputs:
       version:
         description: 'Version number'
-        required: false
-        default: '' # Default empty; will use artifact version if not provided
+        required: true # User must provide a version
+        default: '1.0.0' # Optional default version
 
 jobs:
   call-build:
@@ -20,14 +20,14 @@ jobs:
     needs: call-build # Ensure the build job has finished
 
     steps:
-    - name: Download version artifact
+    - name: Download Version Artifact
       uses: actions/download-artifact@v3
       with:
         name: version
         path: ./
 
-    - name: Set default version from artifact
-      id: set_version
+    - name: Read Version from Artifact
+      id: read_version
       run: |
         if [ -f version.txt ]; then
           VERSION=$(cat version.txt)
@@ -36,12 +36,10 @@ jobs:
           echo "VERSION=unknown" >> $GITHUB_ENV
         fi
 
-    - name: Display the version
+    - name: Display the Version
       run: |
-        VERSION=${{ github.event.inputs.version || env.VERSION }}
-        echo "Promoting with version: $VERSION"
+        echo "Promoting with version: ${{ env.VERSION }}"
 
-    - name: Run post-promotion tasks
+    - name: Run Post-Promotion Tasks
       run: |
-        VERSION=${{ github.event.inputs.version || env.VERSION }}
-        echo "Running post-promotion tasks with version: $VERSION"
+        echo "Running post-promotion tasks with version: ${{ env.VERSION }}"
