@@ -2,7 +2,7 @@
 name: Build
 
 on:
-  workflow_call: 
+  workflow_call:
 
 jobs:
   build:
@@ -21,8 +21,8 @@ jobs:
       run: python hello.py
 
     - name: Save version artifact
-      if: always() # Save artifact even if previous steps fail
+      if: always()
       uses: actions/upload-artifact@v3
       with:
         name: version
-        path: version.txt # Path to the file where the version is saved
+        path: version.txt
