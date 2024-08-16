@@ -10,7 +10,7 @@ on:
 
 jobs:
   promote:
-    uses: .github/workflows/build.yml  # Corrected the path to the build workflow
+    uses: ./.github/workflows/build.yml  # Corrected the path to the build workflow
 
   post-promote:
     runs-on: ubuntu-latest
