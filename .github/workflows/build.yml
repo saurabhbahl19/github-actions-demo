@@ -2,7 +2,7 @@
 name: Build
 
 on:
-  workflow_call:
+  workflow_call: # This allows the workflow to be called by other workflows
 
 jobs:
   build:
@@ -12,16 +12,10 @@ jobs:
     - name: Check out the repository
       uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
+    - name: Run Build
+      run: echo "Building..."
 
-    - name: Run the Python script
-      run: python hello.py
-
-    - name: Save version artifact
-      if: always()
+    - name: Save Version Artifact
       uses: actions/upload-artifact@v3
       with:
         name: version
