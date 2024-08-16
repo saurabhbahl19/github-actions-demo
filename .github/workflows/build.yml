@@ -2,7 +2,7 @@
 name: Build
 
 on:
-  workflow_call: # Allows other workflows to call this one
+  workflow_call: # Allows this workflow to be called from other workflows
 
 jobs:
   build:
