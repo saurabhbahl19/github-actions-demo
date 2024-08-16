@@ -1,0 +1,28 @@
+# .github/workflows/promote.yml
+name: Promote
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number'
+        required: true
+        default: '1.0.0'
+
+jobs:
+  promote:
+    uses: ./.github/workflows/build.yml # Inherits from the build workflow
+
+  post-promote:
+    runs-on: ubuntu-latest
+    needs: promote # Ensure it runs after the build job
+
+    steps:
+    - name: Display the version
+      run: |
+        echo "Promoting with version: ${{ github.event.inputs.version }}"
+
+    - name: Run post-promotion tasks
+      run: |
+        # You can add any commands here that should run after the build
+        echo "Running post-promotion tasks with version: ${{ github.event.inputs.version }}"
