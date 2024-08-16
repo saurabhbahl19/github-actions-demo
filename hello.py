@@ -1,8 +1,6 @@
+# hello.py (example)
 import sys
 
-if len(sys.argv) > 1:
-    version = sys.argv[1]
-else:
-    version = "default_version"
-
-print(f"Running script with version: {version}")
+version = sys.argv[1] if len(sys.argv) > 1 else "unknown"
+with open('version.txt', 'w') as f:
+    f.write(version)
