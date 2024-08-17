@@ -55,7 +55,7 @@ jobs:
 
     - name: Show the version
       if: env.SKIP_UPDATE == 'false'
-      run: echo "Promoting with version: ${{ github.event.inputs.version }}"
+      run: echo "Promoting with version:${{ github.event.inputs.version }}"
 
     - name: Skip promotion
       if: env.SKIP_UPDATE == 'true'
