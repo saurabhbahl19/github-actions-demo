@@ -29,15 +29,18 @@ jobs:
         name: version
         path: ./  # Downloads artifact to the current working directory
 
-    - name: Display the previous and new version
+    - name: Check if the version is the same
+      id: check_version
       run: |
-        echo "Previous version:"
-        cat version.txt
-        echo "New version: ${{ github.event.inputs.version }}"
-        echo "${{ github.event.inputs.version }}" > version.txt
-        echo "Updated version:"
-        cat version.txt
-        echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+        current_version=$(cat version.txt)
+        echo "Previous version: $current_version"
+        if [ "$current_version" = "${{ github.event.inputs.version }}" ]; then
+          echo "Same version detected, skipping update."
+          echo "SKIP_UPDATE=true" >> $GITHUB_ENV
+        else
+          echo "New version detected."
+          echo "${{ github.event.inputs.version }}" > version.txt
+          echo "SKIP_UPDATE=false" >> $GITHUB_ENV
 
     - name: Configure Git
       run: |
