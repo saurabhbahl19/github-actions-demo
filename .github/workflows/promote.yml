@@ -41,15 +41,12 @@ jobs:
           echo "New version detected."
           echo "${{ github.event.inputs.version }}" > version.txt
           echo "SKIP_UPDATE=false" >> $GITHUB_ENV
-      shell: bash
 
-    - name: Configure Git
+    - name: Commit and push updated version.txt
+      if: env.SKIP_UPDATE == 'false'
       run: |
         git config --global user.email "actions@github.com"
         git config --global user.name "GitHub Actions"
-
-    - name: Commit updated version.txt
-      run: |
         git add version.txt
         git commit -m "Update version.txt with new version"
         git push
@@ -57,7 +54,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAT }}  # Use the PAT secret for authentication
 
     - name: Show the version
-      run: echo "Promoting with version:${{ env.VERSION }}"
+      if: env.SKIP_UPDATE == 'false'
+      run: echo "Promoting with version: ${{ github.event.inputs.version }}"
 
-    - name: Run post-promotion tasks
-      run: echo "Running post-promotion tasks with version:${{ env.VERSION }}"
+    - name: Skip promotion
+      if: env.SKIP_UPDATE == 'true'
+      run: echo "Skipping promotion as the version is the same."
