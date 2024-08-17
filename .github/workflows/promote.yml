@@ -41,7 +41,8 @@ jobs:
           echo "New version detected."
           echo "${{ github.event.inputs.version }}" > version.txt
           echo "SKIP_UPDATE=false" >> $GITHUB_ENV
-
+        fi
+        
     - name: Commit and push updated version.txt
       if: env.SKIP_UPDATE == 'false'
       run: |
