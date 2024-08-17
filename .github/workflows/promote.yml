@@ -41,6 +41,7 @@ jobs:
           echo "New version detected."
           echo "${{ github.event.inputs.version }}" > version.txt
           echo "SKIP_UPDATE=false" >> $GITHUB_ENV
+      shell: bash
 
     - name: Configure Git
       run: |
