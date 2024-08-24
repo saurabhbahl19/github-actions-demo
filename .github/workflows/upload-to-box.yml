@@ -12,7 +12,7 @@ on:
         required: true
         default: './test.zip'
       folder_id:
-        description: 'ID of the folder in Box'
+        description: '281816790119'
         required: true
         default: '0'  # Default to root folder
 
