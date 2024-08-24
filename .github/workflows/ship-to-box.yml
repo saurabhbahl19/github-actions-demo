@@ -37,7 +37,7 @@ jobs:
           const client = sdk.getBasicClient(process.env.BOX_DEVELOPER_TOKEN);
           
           const fs = require('fs');
-          const stream = fs.createReadStream('./path-to-your-file.txt');
+          const stream = fs.createReadStream('./version.txt');
           
           client.files.uploadFile('0', 'uploaded-file.txt', stream)
             .then(file => console.log('File uploaded:', file))
