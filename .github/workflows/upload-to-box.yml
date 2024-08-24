@@ -1,0 +1,47 @@
+name: Upload to Box
+
+on:
+  workflow_dispatch:
+    inputs:
+      jar_path:
+        description: 'Path to the JAR file'
+        required: true
+        default: './myTest.jar'
+      zip_path:
+        description: 'Path to the ZIP file'
+        required: true
+        default: './test.zip'
+      folder_id:
+        description: 'ID of the folder in Box'
+        required: true
+        default: '0'  # Default to root folder
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Upload JAR and ZIP to Box
+        env:
+          BOX_ACCESS_TOKEN: ${{ secrets.BOX_ACCESS_TOKEN }}
+        run: |
+          curl -X POST "https://upload.box.com/api/2.0/files/content" \
+               -H "Authorization: Bearer $BOX_ACCESS_TOKEN" \
+               -F "folder_id=${{ github.event.inputs.folder_id }}" \
+               -F "file=@${{ github.event.inputs.jar_path }}"
+              
+          curl -X POST "https://upload.box.com/api/2.0/files/content" \
+               -H "Authorization: Bearer $BOX_ACCESS_TOKEN" \
+               -F "folder_id=${{ github.event.inputs.folder_id }}" \
+               -F "file=@${{ github.event.inputs.zip_path }}"
