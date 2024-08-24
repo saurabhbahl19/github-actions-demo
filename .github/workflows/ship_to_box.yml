@@ -1,9 +1,7 @@
-name: Ship Text File to Box
+name: Ship JAR File to Box
 
 on:
-  push:
-    branches:
-      - 9993c19
+  workflow_dispatch: 
 
 jobs:
   upload:
@@ -21,7 +19,7 @@ jobs:
       - name: Install Box SDK
         run: npm install box-node-sdk
 
-      - name: Upload text file to Box
+      - name: Upload JAR file to Box
         env:
           BOX_CLIENT_ID: ${{ secrets.BOX_CLIENT_ID }}
           BOX_CLIENT_SECRET: ${{ secrets.BOX_CLIENT_SECRET }}
