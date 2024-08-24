@@ -3,7 +3,7 @@ name: Ship Text File to Box
 on:
   push:
     branches:
-      - main
+      - 9993c19
 
 jobs:
   upload:
