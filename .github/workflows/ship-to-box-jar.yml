@@ -15,7 +15,7 @@ jobs:
         run: |
           curl -X POST "https://upload.box.com/api/2.0/files/content" \
                -H "Authorization: Bearer ${{ secrets.BOX_DEVELOPER_TOKEN }}" \
-               -F "folder_id=0" \
+               -F "folder_id=281816790119" \
                -F "file=@./test.zip"
 
       - name: Upload ZIP to Bor
@@ -27,5 +27,5 @@ jobs:
                
       - name: Validate files after uploading
         run: |
-          curl -X GET "https://api.box.com/2.0/folders/0/items" \
+          curl -X GET "https://api.box.com/2.0/folders/281816790119/items" \
           -H "Authorization: Bearer ${{ secrets.BOX_DEVELOPER_TOKEN }}"
