@@ -25,10 +25,11 @@ jobs:
           BOX_CLIENT_SECRET: ${{ secrets.BOX_CLIENT_SECRET }}
           BOX_REFRESH_TOKEN: ${{ secrets.BOX_REFRESH_TOKEN }}
         run: |
-          node <<EOF
+          node -e "
           const https = require('https');
           const BoxSDK = require('box-node-sdk');
           const querystring = require('querystring');
+          const fs = require('fs');
 
           const refreshToken = () => {
             return new Promise((resolve, reject) => {
@@ -83,21 +84,17 @@ jobs:
               const client = sdk.getBasicClient(accessToken);
               const folderId = '0'; // root folder
 
-              // Check if the file already exists
               const items = await client.folders.getItems(folderId, { limit: 1000 });
               const existingFile = items.entries.find(item => item.name === 'myTest.jar');
 
-              const fs = require('fs');
               const stream = fs.createReadStream('./myTest.jar');
 
               if (existingFile) {
-                // File exists, overwrite it
                 const fileId = existingFile.id;
                 client.files.update(fileId, {}, stream)
                   .then(file => console.log('File overwritten:', file))
                   .catch(err => console.error('Error overwriting file:', err));
               } else {
-                // File doesn't exist, upload it
                 client.files.uploadFile(folderId, 'myTest.jar', stream)
                   .then(file => console.log('File uploaded:', file))
                   .catch(err => console.error('Error uploading file:', err));
@@ -106,4 +103,4 @@ jobs:
               console.error('Error:', error);
             }
           })();
-          EOF
+          "
