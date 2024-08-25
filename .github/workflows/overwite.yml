@@ -16,8 +16,8 @@ jobs:
         with:
           node-version: '14'
 
-      - name: Install Node.js dependencies
-        run: npm install box-node-sdk axios
+      - name: Install Box SDK
+        run: npm install box-node-sdk
 
       - name: Upload JAR to Box
         env:
@@ -26,52 +26,84 @@ jobs:
           BOX_REFRESH_TOKEN: ${{ secrets.BOX_REFRESH_TOKEN }}
         run: |
           node <<EOF
+          const https = require('https');
           const BoxSDK = require('box-node-sdk');
-          const axios = require('axios');
+          const querystring = require('querystring');
 
-          const refreshToken = async () => {
-            const response = await axios.post('https://api.box.com/oauth2/token', null, {
-              params: {
-                grant_type: 'refresh_token',
-                refresh_token: process.env.BOX_REFRESH_TOKEN,
-                client_id: process.env.BOX_CLIENT_ID,
-                client_secret: process.env.BOX_CLIENT_SECRET,
-              }
+          const refreshToken = () => {
+            return new Promise((resolve, reject) => {
+              const postData = querystring.stringify({
+                'grant_type': 'refresh_token',
+                'refresh_token': process.env.BOX_REFRESH_TOKEN,
+                'client_id': process.env.BOX_CLIENT_ID,
+                'client_secret': process.env.BOX_CLIENT_SECRET,
+              });
+
+              const options = {
+                hostname: 'api.box.com',
+                path: '/oauth2/token',
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  'Content-Length': postData.length,
+                },
+              };
+
+              const req = https.request(options, (res) => {
+                let data = '';
+                res.on('data', (chunk) => {
+                  data += chunk;
+                });
+                res.on('end', () => {
+                  if (res.statusCode === 200) {
+                    resolve(JSON.parse(data).access_token);
+                  } else {
+                    reject(new Error(`Failed to refresh token: ${data}`));
+                  }
+                });
+              });
+
+              req.on('error', (e) => {
+                reject(e);
+              });
+
+              req.write(postData);
+              req.end();
             });
-            return response.data.access_token;
           };
 
           (async () => {
-            const accessToken = await refreshToken();
-            const sdk = new BoxSDK({
-              clientID: process.env.BOX_CLIENT_ID,
-              clientSecret: process.env.BOX_CLIENT_SECRET
-            });
-            
-            const client = sdk.getBasicClient(accessToken);
-            const folderId = '0'; // root folder
+            try {
+              const accessToken = await refreshToken();
+              const sdk = new BoxSDK({
+                clientID: process.env.BOX_CLIENT_ID,
+                clientSecret: process.env.BOX_CLIENT_SECRET
+              });
+              
+              const client = sdk.getBasicClient(accessToken);
+              const folderId = '0'; // root folder
 
-            // Check if the file already exists
-            const items = await client.folders.getItems(folderId, { limit: 1000 });
-            const existingFile = items.entries.find(item => item.name === 'myTest.jar');
+              // Check if the file already exists
+              const items = await client.folders.getItems(folderId, { limit: 1000 });
+              const existingFile = items.entries.find(item => item.name === 'myTest.jar');
 
-            if (existingFile) {
-              // File exists, overwrite it
-              const fileId = existingFile.id;
               const fs = require('fs');
               const stream = fs.createReadStream('./myTest.jar');
-              
-              client.files.update(fileId, {}, stream)
-                .then(file => console.log('File overwritten:', file))
-                .catch(err => console.error('Error overwriting file:', err));
-            } else {
-              // File doesn't exist, upload it
-              const fs = require('fs');
-              const stream = fs.createReadStream('./myTest.jar');
-              
-              client.files.uploadFile(folderId, 'myTest.jar', stream)
-                .then(file => console.log('File uploaded:', file))
-                .catch(err => console.error('Error uploading file:', err));
+
+              if (existingFile) {
+                // File exists, overwrite it
+                const fileId = existingFile.id;
+                client.files.update(fileId, {}, stream)
+                  .then(file => console.log('File overwritten:', file))
+                  .catch(err => console.error('Error overwriting file:', err));
+              } else {
+                // File doesn't exist, upload it
+                client.files.uploadFile(folderId, 'myTest.jar', stream)
+                  .then(file => console.log('File uploaded:', file))
+                  .catch(err => console.error('Error uploading file:', err));
+              }
+            } catch (error) {
+              console.error('Error:', error);
             }
           })();
           EOF
