@@ -1,4 +1,4 @@
-name: Upload File to Box overwrite
+name: Upload JAR to Box
 
 on:
   workflow_dispatch:
@@ -11,10 +11,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Box SDK
-        run: npm install box-node-sdk
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
 
-      - name: Upload File to Box
+      - name: Install Node.js dependencies
+        run: npm install box-node-sdk axios
+
+      - name: Upload JAR to Box
         env:
           BOX_CLIENT_ID: ${{ secrets.BOX_CLIENT_ID }}
           BOX_CLIENT_SECRET: ${{ secrets.BOX_CLIENT_SECRET }}
