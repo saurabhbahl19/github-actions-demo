@@ -31,7 +31,7 @@ jobs:
           
           // Authenticate the app using JWT
           const client = sdk.getAppAuthClient('enterprise');
-          
+
           // Define the path to the file and folder ID
           const fs = require('fs');
           const stream = fs.createReadStream('./myTest.jar');
@@ -39,8 +39,12 @@ jobs:
 
           // Upload the file to the specified folder
           client.files.uploadFile(folderId, 'myTest.jar', stream)
-            .then(file => console.log('File uploaded:', file))
-            .catch(err => console.error('Error uploading file:', err));
+            .then(file => {
+              console.log('File uploaded:', file);
+            })
+            .catch(err => {
+              console.error('Error uploading file:', err.response ? err.response.data : err);
+            });
           EOF
 
       - name: Generate Access Token
