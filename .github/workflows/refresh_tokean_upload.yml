@@ -1,0 +1,40 @@
+name: Refresh Token and Upload to Box
+
+on:
+  workflow_dispatch:
+
+jobs:
+  refresh-and-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Refresh Box Access Token
+      id: refresh_token
+      run: |
+        RESPONSE=$(curl -X POST https://api.box.com/oauth2/token \
+        -d grant_type=refresh_token \
+        -d refresh_token=${{ secrets.BOX_REFRESH_TOKEN }} \
+        -d client_id=${{ secrets.BOX_CLIENT_ID }} \
+        -d client_secret=${{ secrets.BOX_CLIENT_SECRET }})
+        echo "Response: $RESPONSE"
+        echo "::set-output name=access_token::$(echo $RESPONSE | jq -r '.access_token')"
+
+    - name: Upload a File to Box
+      id: upload
+      run: |
+        RESPONSE=$(curl -X POST https://upload.box.com/api/2.0/files/content \
+        -H "Authorization: Bearer ${{ steps.refresh_token.outputs.access_token }}" \
+        -F "attributes={\"name\":\"myTest.jar\",\"parent\":{\"id\":\"0\"}};type=application/json" \
+        -F "file=@./myTest.jar")
+        echo "Response: $RESPONSE"
+        echo "::set-output name=file_id::$(echo $RESPONSE | jq -r '.entries[0].id')"
+
+    - name: List Files in the Folder
+      run: |
+        FOLDER_ID="0"
+        curl -X GET https://api.box.com/2.0/folders/$FOLDER_ID/items \
+        -H "Authorization: Bearer ${{ steps.refresh_token.outputs.access_token }}" \
+        -H "Content-Type: application/json"
