@@ -19,7 +19,7 @@ jobs:
       run: |
         RESPONSE=$(curl -X POST https://api.box.com/2.0/files/content \
         -H "Authorization: Bearer ${{ secrets.BOX_BEARER_TOKEN }}" \
-        -F "attributes={\"name\":\"testfile.txt\",\"parent\":{\"id\":\"0\"}};type=application/json" \
+        -F "attributes={\"name\":\"myTest.jar\",\"parent\":{\"id\":\"0\"}};type=application/json" \
         -F "file=@./myTest.jar")
         echo "Response: $RESPONSE"
         echo "::set-output name=file_id::$(echo $RESPONSE | jq -r '.entries[0].id')"
