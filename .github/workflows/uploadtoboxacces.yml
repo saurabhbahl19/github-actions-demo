@@ -22,8 +22,10 @@ jobs:
         -F "attributes={\"name\":\"myTest.jar\",\"parent\":{\"id\":\"0\"}};type=application/json" \
         -F "file=@./myTest.jar")
         echo "Response: $RESPONSE"
-        echo "::set-output name=file_id::$(echo $RESPONSE | jq -r '.entries[0].id')"
-    
+        FILE_ID=$(echo $RESPONSE | jq -r '.entries[0].id')
+        echo "File ID: $FILE_ID"
+        echo "file_id=$FILE_ID" >> $GITHUB_ENV
+
     - name: List Files in the Folder
       run: |
         FOLDER_ID="0"  # Replace with your actual folder ID if not the root
@@ -31,4 +33,5 @@ jobs:
         -H "Authorization: Bearer ${{ secrets.BOX_BEARER_TOKEN }}" \
         -H "Content-Type: application/json")
         echo "Files in Folder: $RESPONSE"
+
 
