@@ -43,7 +43,8 @@ jobs:
               console.log('File uploaded:', file);
             })
             .catch(err => {
-              console.error('Error uploading file:', err.response ? err.response.data : err);
+              console.error('Error uploading file:', err.message);
+              console.error('Error details:', err.response ? err.response.data : err);
             });
           EOF
 
