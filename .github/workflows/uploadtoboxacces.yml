@@ -24,7 +24,7 @@ jobs:
     - name: Upload a File to Box
       id: upload
       run: |
-        RESPONSE=$(curl -v -X POST https://api.box.com/2.0/files/content \
+        RESPONSE=$(curl -v -X POST https://upload.box.com/api/2.0/files/content \
         -H "Authorization: Bearer ${{ secrets.BOX_BEARER_TOKEN }}" \
         -F "attributes={\"name\":\"myTest.jar\",\"parent\":{\"id\":\"0\"}};type=application/json" \
         -F "file=@./myTest.jar")
