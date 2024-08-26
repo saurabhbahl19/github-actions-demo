@@ -12,4 +12,5 @@ jobs:
       run: |
         curl -X GET https://api.box.com/2.0/users/me \
         -H "Authorization: Bearer ${{ secrets.BOX_BEARER_TOKEN }}" \
-        -H "Content-Type: application/json"
+        -H "Content-Type: application/json" \
+        -v
