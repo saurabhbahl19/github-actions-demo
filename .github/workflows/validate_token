@@ -1,0 +1,15 @@
+name: Validate Box Bearer Token
+
+on:
+  workflow_dispatch:  # Allows manual triggering from the GitHub UI
+
+jobs:
+  validate-token:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Make a Request to Validate the Token
+      run: |
+        curl -X GET https://api.box.com/2.0/users/me \
+        -H "Authorization: Bearer ${{ secrets.BOX_BEARER_TOKEN }}" \
+        -H "Content-Type: application/json"
