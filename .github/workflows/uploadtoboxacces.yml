@@ -1,4 +1,4 @@
-name: Upload File to Box
+name: Upload File to Box using access token
 
 on:
   workflow_dispatch:  # Allows manual triggering from the GitHub UI
@@ -15,8 +15,18 @@ jobs:
       run: ls -l ./myTest.jar
 
     - name: Upload a File to Box
+      id: upload
       run: |
-        curl -X POST https://api.box.com/2.0/files/content \
+        RESPONSE=$(curl -X POST https://api.box.com/2.0/files/content \
         -H "Authorization: Bearer ${{ secrets.BOX_BEARER_TOKEN }}" \
         -F "attributes={\"name\":\"testfile.txt\",\"parent\":{\"id\":\"0\"}};type=application/json" \
-        -F "file=@./myTest.jar"
+        -F "file=@./myTest.jar")
+        echo "Response: $RESPONSE"
+        echo "::set-output name=file_id::$(echo $RESPONSE | jq -r '.entries[0].id')"
+
+    - name: List Files in the Folder
+      run: |
+        FOLDER_ID="0"  # Replace with your actual folder ID if not the root
+        curl -X GET https://api.box.com/2.0/folders/$FOLDER_ID/items \
+        -H "Authorization: Bearer ${{ secrets.BOX_BEARER_TOKEN }}" \
+        -H "Content-Type: application/json"
