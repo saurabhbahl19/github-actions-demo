@@ -1,0 +1,16 @@
+name: Upload File to Box using access token
+
+on:
+  workflow_dispatch:  # Allows manual triggering from the GitHub UI
+
+jobs:
+  upload-file:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Upload a File
+      run: |
+        curl -X POST https://api.box.com/2.0/files/content \
+        -H "Authorization: Bearer ${{ secrets.BOX_BEARER_TOKEN }}" \
+        -F "attributes={\"name\":\"testfile.txt\",\"parent\":{\"id\":\"0\"}};type=application/json" \
+        -F "file=@./myTest.jar"
