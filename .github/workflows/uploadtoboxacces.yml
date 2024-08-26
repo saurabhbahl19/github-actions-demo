@@ -1,4 +1,4 @@
-name: Upload File to Box using access token
+name: Upload File to Box
 
 on:
   workflow_dispatch:  # Allows manual triggering from the GitHub UI
@@ -8,7 +8,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Upload a File
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: List Files
+      run: ls -l ./myTest.jar
+
+    - name: Upload a File to Box
       run: |
         curl -X POST https://api.box.com/2.0/files/content \
         -H "Authorization: Bearer ${{ secrets.BOX_BEARER_TOKEN }}" \
