@@ -15,20 +15,25 @@ jobs:
       id: refresh_token
       run: |
         RESPONSE=$(curl -X POST https://api.box.com/oauth2/token \
-        -d grant_type=refresh_token \
-        -d refresh_token=${{ secrets.BOX_REFRESH_TOKEN }} \
-        -d client_id=${{ secrets.BOX_CLIENT_ID }} \
-        -d client_secret=${{ secrets.BOX_CLIENT_SECRET }})
+          -d grant_type=refresh_token \
+          -d refresh_token=${{ secrets.BOX_REFRESH_TOKEN }} \
+          -d client_id=${{ secrets.BOX_CLIENT_ID }} \
+          -d client_secret=${{ secrets.BOX_CLIENT_SECRET }})
         echo "Response: $RESPONSE"
+        # Check if there is an error in the response
+        if echo "$RESPONSE" | jq -e '.error' > /dev/null; then
+          echo "Error refreshing token: $(echo $RESPONSE | jq -r '.error_description')"
+          exit 1
+        fi
         echo "::set-output name=access_token::$(echo $RESPONSE | jq -r '.access_token')"
 
     - name: Upload a File to Box
       id: upload
       run: |
         RESPONSE=$(curl -X POST https://upload.box.com/api/2.0/files/content \
-        -H "Authorization: Bearer ${{ steps.refresh_token.outputs.access_token }}" \
-        -F "attributes={\"name\":\"myTest.jar\",\"parent\":{\"id\":\"0\"}};type=application/json" \
-        -F "file=@./myTest.jar")
+          -H "Authorization: Bearer ${{ steps.refresh_token.outputs.access_token }}" \
+          -F "attributes={\"name\":\"myTest.jar\",\"parent\":{\"id\":\"0\"}};type=application/json" \
+          -F "file=@./myTest.jar")
         echo "Response: $RESPONSE"
         echo "::set-output name=file_id::$(echo $RESPONSE | jq -r '.entries[0].id')"
 
@@ -36,5 +41,5 @@ jobs:
       run: |
         FOLDER_ID="0"
         curl -X GET https://api.box.com/2.0/folders/$FOLDER_ID/items \
-        -H "Authorization: Bearer ${{ steps.refresh_token.outputs.access_token }}" \
-        -H "Content-Type: application/json"
+          -H "Authorization: Bearer ${{ steps.refresh_token.outputs.access_token }}" \
+          -H "Content-Type: application/json"
