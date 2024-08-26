@@ -13,12 +13,19 @@ jobs:
 
     - name: List Files
       run: ls -l ./myTest.jar
+      
+    - name: Make a Request to Validate the Token
+      run: |
+        curl -X GET https://api.box.com/2.0/users/me \
+        -H "Authorization: Bearer ${{ secrets.BOX_BEARER_TOKEN }}" \
+        -H "Content-Type: application/json" \
+        -v
 
     - name: Upload a File to Box
       id: upload
       run: |
         RESPONSE=$(curl -v -X POST https://api.box.com/2.0/files/content \
-        -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+        -H "Authorization: Bearer ${{ secrets.BOX_BEARER_TOKEN }}" \
         -F "attributes={\"name\":\"myTest.jar\",\"parent\":{\"id\":\"0\"}};type=application/json" \
         -F "file=@./myTest.jar")
         echo "Response: $RESPONSE"
