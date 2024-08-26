@@ -31,16 +31,17 @@ jobs:
           
           // Authenticate the app using JWT
           const client = sdk.getAppAuthClient('enterprise');
-
-          // Replace 'user' with 'enterprise' to use the Service Account (App User)
+          
+          // Define the path to the file and folder ID
           const fs = require('fs');
           const stream = fs.createReadStream('./myTest.jar');
+          const folderId = '281816790119';  // Replace with your folder ID
 
-          client.files.uploadFile('0', 'myTest.jar', stream)
+          // Upload the file to the specified folder
+          client.files.uploadFile(folderId, 'myTest.jar', stream)
             .then(file => console.log('File uploaded:', file))
             .catch(err => console.error('Error uploading file:', err));
           EOF
-
 
       - name: Generate Access Token
         id: generate_token
@@ -52,7 +53,7 @@ jobs:
           const fs = require('fs');
           const config = JSON.parse(process.env.BOX_CONFIG);
           const sdk = BoxSDK.getPreconfiguredInstance(config);
-          const client = sdk.getAppAuthClient('user', 'YOUR_USER_ID'); // Replace with your user ID
+          const client = sdk.getAppAuthClient('enterprise');
           client.getAccessToken().then(token => {
             console.log('ACCESS_TOKEN=' + token);
             fs.writeFileSync('/tmp/access_token.txt', token);
@@ -66,5 +67,5 @@ jobs:
       - name: Verify File Upload
         run: |
           ACCESS_TOKEN=$(cat /tmp/access_token.txt)
-          curl -X GET "https://api.box.com/2.0/folders/0/items" \
+          curl -X GET "https://api.box.com/2.0/folders/281816790119/items" \
                -H "Authorization: Bearer $ACCESS_TOKEN"
