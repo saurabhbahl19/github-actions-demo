@@ -35,9 +35,11 @@ jobs:
           BOX_FOLDER_ID: '0'
         run: |
           echo $BOX_ACCESS_TOKEN
+          mv ./myTest.jar ./myTest-$(date +%s).jar
           curl -X POST "https://upload.box.com/api/2.0/files/content" \
-          -H "authorization: Bearer $BOX_ACCESS_TOKEN" \
-          -H "content-type: multipart/form-data" \
-          -F "attributes={\"name\":\"myTest.jar\", \"parent\":{\"id\":\"$BOX_FOLDER_ID\"}}" \
-          -F file=@./myTest.jar
+            -H "authorization: Bearer $BOX_ACCESS_TOKEN" \
+            -H "content-type: multipart/form-data" \
+            -F "attributes={\"name\":\"myTest-$(date +%s).jar\", \"parent\":{\"id\":\"$BOX_FOLDER_ID\"}}" \
+            -F file=@./myTest-$(date +%s).jar
+
 
