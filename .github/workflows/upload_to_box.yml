@@ -42,12 +42,46 @@ jobs:
             -F "attributes={\"name\":\"myTest-$(date +%s).jar\", \"parent\":{\"id\":\"$BOX_FOLDER_ID\"}}" \
             -F file=@./myTest-$(date +%s).jar
 
+
+
+      # - name: Upload cie-rules*.jar to Box
+      #   run: |
+      #     BOX_FOLDER_ID="YOUR_FOLDER_ID"  # Set your folder ID here
+      #     RESPONSE=$(curl -v -X POST https://upload.box.com/api/2.0/files/content \
+      #     -H "authorization: Bearer $BOX_ACCESS_TOKEN" \
+      #     -F "attributes={\"name\":\"cie-rules-${{ steps.get_version.outputs.pomVersion }}.jar\",\"parent\":{\"id\":\"$BOX_FOLDER_ID\"}};type=application/json" \
+      #     -F "file=@./lambdas/java/cie-rules/target/cie-rules*.jar")
+      #     echo "Response: $RESPONSE"
+      #     FILE_ID=$(echo $RESPONSE | jq -r '.entries[0].id')  # Adjust jq expression if needed
+      #     echo "File ID: $FILE_ID"
+      #     echo "file_id=$FILE_ID" >> $GITHUB_ENV
+
+      # - name: Upload Python Lambdas to Box
+      #   run: |
+      #     cd lambdas/python
+      #     for function_name in $(ls); do
+      #       BOX_FOLDER_ID="YOUR_FOLDER_ID"  # Set your folder ID here
+      #       RESPONSE=$(curl -v -X POST https://upload.box.com/api/2.0/files/content \
+      #       -H "Authorization: Bearer ${{ secrets.BOX_BEARER_TOKEN }}" \
+      #       -F "attributes={\"name\":\"${function_name}-v${{ steps.get_version.outputs.pomVersion }}.zip\",\"parent\":{\"id\":\"$BOX_FOLDER_ID\"}};type=application/json" \
+      #       -F "file=@./${function_name}-v${{ steps.get_version.outputs.pomVersion }}.zip")
+      #       echo "Response: $RESPONSE"
+      #       FILE_ID=$(echo $RESPONSE | jq -r '.entries[0].id')  # Adjust jq expression if needed
+      #       echo "File ID: $FILE_ID"
+      #       echo "file_id=$FILE_ID" >> $GITHUB_ENV
+      #     done
+
+  
+
       - name: List Files in the Folder
         run: |
           FOLDER_ID="0"  # Replace with your actual folder ID if not the root
           RESPONSE=$(curl -X GET https://api.box.com/2.0/folders/$FOLDER_ID/items \
-          -H "Authorization: Bearer $BOX_ACCESS_TOKEN" \
-          -H "Content-Type: application/json")
-          echo "Files in Folder: $RESPONSE"
+            -H "Authorization: Bearer $BOX_ACCESS_TOKEN" \
+            -H "Content-Type: application/json")
+          echo "Raw Response: $RESPONSE"
+          echo "Files in Folder:"
+          echo $RESPONSE | jq -r '.entries[] | select(.type == "file") | .name'
+      
 
 
