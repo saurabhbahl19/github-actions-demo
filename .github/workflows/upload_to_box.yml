@@ -35,7 +35,7 @@ jobs:
           BOX_FOLDER_ID: '0'
         run: |
           echo $BOX_ACCESS_TOKEN
-          cd lambdas/python
+          # cd lambdas/python
           curl -X POST "https://upload.box.com/api/2.0/files/content" \
             -H "authorization: Bearer $BOX_ACCESS_TOKEN" \
             -H "content-type: multipart/form-data" \
