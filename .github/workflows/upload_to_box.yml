@@ -42,4 +42,12 @@ jobs:
             -F "attributes={\"name\":\"myTest-$(date +%s).jar\", \"parent\":{\"id\":\"$BOX_FOLDER_ID\"}}" \
             -F file=@./myTest-$(date +%s).jar
 
+      - name: List Files in the Folder
+        run: |
+          FOLDER_ID="0"  # Replace with your actual folder ID if not the root
+          RESPONSE=$(curl -X GET https://api.box.com/2.0/folders/$FOLDER_ID/items \
+          -H "Authorization: Bearer $BOX_ACCESS_TOKEN" \
+          -H "Content-Type: application/json")
+          echo "Files in Folder: $RESPONSE"
+
 
