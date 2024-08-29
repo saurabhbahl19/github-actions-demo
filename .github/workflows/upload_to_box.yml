@@ -1,4 +1,4 @@
-name: Upload to Box
+name: Upload to Box jwt
 
 on:
   workflow_dispatch:
