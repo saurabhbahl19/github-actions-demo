@@ -32,7 +32,7 @@ jobs:
       - name: Upload ZIP to Box
         env:
           BOX_ACCESS_TOKEN: ${{ env.BOX_ACCESS_TOKEN }}
-          BOX_FOLDER_ID: '0'
+          BOX_FOLDER_ID: '281816790119'
         run: |
           echo $BOX_ACCESS_TOKEN
           curl -X POST "https://upload.box.com/api/2.0/files/content" \
