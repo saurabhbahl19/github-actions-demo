@@ -35,9 +35,10 @@ jobs:
           BOX_FOLDER_ID: '0'
         run: |
           echo $BOX_ACCESS_TOKEN
-          # cd lambdas/python
           curl -X POST "https://upload.box.com/api/2.0/files/content" \
             -H "authorization: Bearer $BOX_ACCESS_TOKEN" \
             -H "content-type: multipart/form-data" \
             -F "attributes={\"name\":\"myTest.jar\", \"parent\":{\"id\":\"$BOX_FOLDER_ID\"}}" \
-            -F file=@./myTest.jar
+            -F file=@./myTest.jar \
+            --fail --retry 5 --retry-delay 3 \
+            --header "If-Match: *"
