@@ -29,25 +29,29 @@ jobs:
           )
           echo "BOX_ACCESS_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
 
+      - name: Move and Rename File
+        id: move_file
+        run: |
+          TIMESTAMP=$(date +%s)
+          mv ./myTest.jar ./myTest-$TIMESTAMP.jar
+          echo "file_name=myTest-$TIMESTAMP.jar" >> $GITHUB_ENV
+
       - name: Upload ZIP to Box
         env:
           BOX_ACCESS_TOKEN: ${{ env.BOX_ACCESS_TOKEN }}
           BOX_FOLDER_ID: '0'
         run: |
-          echo $BOX_ACCESS_TOKEN
-          TIMESTAMP=$(date +%s)
-          mv ./myTest.jar ./myTest-$TIMESTAMP.jar
           curl -X POST "https://upload.box.com/api/2.0/files/content" \
             -H "authorization: Bearer $BOX_ACCESS_TOKEN" \
             -H "content-type: multipart/form-data" \
-            -F "attributes={\"name\":\"myTest-$TIMESTAMP.jar\", \"parent\":{\"id\":\"$BOX_FOLDER_ID\"}}" \
-            -F file=@./myTest-$TIMESTAMP.jar
+            -F "attributes={\"name\":\"${{ env.file_name }}\", \"parent\":{\"id\":\"$BOX_FOLDER_ID\"}}" \
+            -F file=@./${{ env.file_name }}
 
       - name: Upload JAR to GitHub Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: java-lambda-jar
-          path: ./myTest-$(date +%s).jar
+          path: ./${{ env.file_name }}
 
       - name: List Files in the Folder
         run: |
