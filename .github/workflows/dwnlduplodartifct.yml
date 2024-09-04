@@ -1,4 +1,4 @@
-name: Download and Process Artifacts
+name: check Download and Process Artifacts
 
 on:
   workflow_dispatch:
