@@ -42,6 +42,15 @@ jobs:
             -F "attributes={\"name\":\"myTest-$(date +%s).jar\", \"parent\":{\"id\":\"$BOX_FOLDER_ID\"}}" \
             -F file=@./myTest-$(date +%s).jar
 
+      - name: Upload ZIPs to GitHub Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: java-lambda-jar
+          path: myTest-$(date +%s).jar
+          
+
+
+      
 
 
       # - name: Upload cie-rules*.jar to Box
