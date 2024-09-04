@@ -1,0 +1,22 @@
+name: Upload Artifacts
+
+on:
+  push:
+    branches:
+      - 9993c19
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # - name: Build
+      #   run: echo "Building artifact" # Replace with actual build steps
+
+      - name: Upload JAR to GitHub Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: java-lambda-jar
+          path: ./myTest.jar
