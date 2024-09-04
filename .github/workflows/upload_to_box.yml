@@ -46,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: java-lambda-jar
-          path: myTest-$(date +%s).jar
+          path: ./myTest-$(date +%s).jar
           
 
 
