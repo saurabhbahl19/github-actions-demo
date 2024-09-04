@@ -1,0 +1,19 @@
+name: Download and Process Artifacts
+
+on:
+  workflow_dispatch:
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: java-lambda-jar
+          path: ./artifact
+
+      - name: Verify Downloaded File
+        run: |
+          ls -l ./artifact
+          # Add further steps to process the file
