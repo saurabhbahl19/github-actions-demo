@@ -35,63 +35,19 @@ jobs:
           BOX_FOLDER_ID: '0'
         run: |
           echo $BOX_ACCESS_TOKEN
-          mv ./myTest.jar ./myTest-$(date +%s).jar
+          TIMESTAMP=$(date +%s)
+          mv ./myTest.jar ./myTest-$TIMESTAMP.jar
           curl -X POST "https://upload.box.com/api/2.0/files/content" \
             -H "authorization: Bearer $BOX_ACCESS_TOKEN" \
             -H "content-type: multipart/form-data" \
-            -F "attributes={\"name\":\"myTest-$(date +%s).jar\", \"parent\":{\"id\":\"$BOX_FOLDER_ID\"}}" \
-            -F file=@./myTest-$(date +%s).jar
+            -F "attributes={\"name\":\"myTest-$TIMESTAMP.jar\", \"parent\":{\"id\":\"$BOX_FOLDER_ID\"}}" \
+            -F file=@./myTest-$TIMESTAMP.jar
 
-      - name: Upload ZIPs to GitHub Artifacts
+      - name: Upload JAR to GitHub Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: java-lambda-jar
           path: ./myTest-$(date +%s).jar
-          
-
-
-      
-
-
-      # - name: Upload cie-rules*.jar to Box
-      #   run: |
-      #     BOX_FOLDER_ID="YOUR_FOLDER_ID"  # Set your folder ID here
-      #     RESPONSE=$(curl -v -X POST https://upload.box.com/api/2.0/files/content \
-      #     -H "authorization: Bearer $BOX_ACCESS_TOKEN" \
-      #     -F "attributes={\"name\":\"cie-rules-${{ steps.get_version.outputs.pomVersion }}.jar\",\"parent\":{\"id\":\"$BOX_FOLDER_ID\"}};type=application/json" \
-      #     -F "file=@./lambdas/java/cie-rules/target/cie-rules*.jar")
-      #     echo "Response: $RESPONSE"
-      #     FILE_ID=$(echo $RESPONSE | jq -r '.entries[0].id')  # Adjust jq expression if needed
-      #     echo "File ID: $FILE_ID"
-      #     echo "file_id=$FILE_ID" >> $GITHUB_ENV
-
-      # - name: Upload Python Lambdas to Box
-      #   run: |
-      #     cd lambdas/python
-      #     for function_name in $(ls); do
-      #       BOX_FOLDER_ID="YOUR_FOLDER_ID"  # Set your folder ID here
-      #       RESPONSE=$(curl -v -X POST https://upload.box.com/api/2.0/files/content \
-      #       -H "Authorization: Bearer $BOX_ACCESS_TOKEN" \
-      #       -F "attributes={\"name\":\"${function_name}-v${{ steps.get_version.outputs.pomVersion }}.zip\",\"parent\":{\"id\":\"$BOX_FOLDER_ID\"}};type=application/json" \
-      #       -F "file=@./${function_name}-v${{ steps.get_version.outputs.pomVersion }}.zip")
-      #       echo "Response: $RESPONSE"
-      #       FILE_ID=$(echo $RESPONSE | jq -r '.entries[0].id')  # Adjust jq expression if needed
-      #       echo "File ID: $FILE_ID"
-      #       echo "file_id=$FILE_ID" >> $GITHUB_ENV
-      #     done
-
-      # - name: List All Folders
-      #   run: |
-      #     FOLDER_ID="0"  # Replace with the ID of the folder you want to list folders from, or "0" for the root folder.
-      #     RESPONSE=$(curl -X GET "https://api.box.com/2.0/folders/$FOLDER_ID/items" \
-      #       -H "Authorization: Bearer $BOX_ACCESS_TOKEN" \
-      #       -H "Content-Type: application/json")
-      
-      #     echo "Raw Response: $RESPONSE"
-      #     # Extract and print folder names and IDs
-      #     echo "Folders in Folder:"
-      #     echo $RESPONSE | jq -r '.entries[] | select(.type == "folder") | "\(.name) (\(.id))"'
-
 
       - name: List Files in the Folder
         run: |
@@ -102,6 +58,3 @@ jobs:
           echo "Raw Response: $RESPONSE"
           echo "Files in Folder:"
           echo $RESPONSE | jq -r '.entries[] | select(.type == "file") | .name'
-      
-
-
